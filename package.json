@@ -6,11 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "build":"",
-    "serve": "firebase serve --only functions",
-    "shell": "firebase functions:shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "precopyimages": "tsc ./scripts/copy-imgs.ts --esModuleInterop",
+    "copyimages": "node ./scripts/copy-imgs.js",
+    "prebuild": "npm run copyimages",
+    "build": "next build",
+    "postbuild": "next-sitemap",
+    "preexport": "npm run build",
+    "export": "next export"
     
   },
   "keywords": [],
