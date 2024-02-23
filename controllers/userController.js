@@ -44,15 +44,16 @@ exports.loginUsers = async (req, res) => {
       }
       if (user.password == password) {
         const token = jwt.sign(
-          { id: user._id, name: user.fullName,role:user.role },
+          { id: user._id, name: user.email,lastName:user.lastName },
           process.env.SECRETE_KEY
         );
-        return res.status(200).send({ token: token, role: user.role, name: user.fullName}); 
+        return res.status(200).send({ token: token}); 
       }
   
       return res.status(401).send("Invalid email or password");
       
     } catch (err) {
+      console.log(err)
       return res.status(500).send(err);
     }
   };
