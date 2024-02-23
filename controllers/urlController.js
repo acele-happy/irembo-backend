@@ -1,18 +1,22 @@
 const Url = require("../models/Url");
-// const { nanoid } = require ("nanoid");
-const { v4: uuid4 } = require("uuid");
-// const snowflake = require("snowflake-node");
 require("dotenv").config();
 const cron = require('node-cron');
-
-// const generator = new snowflake.Snowflake({
-//   mid: 1, // Machine ID (unique for each server or instance)
-//   offset: (2022 - 1970) * 31536000 * 1000, // Start time (milliseconds since UNIX epoch)
-// });
 
 exports.text = async (req, res) => {
   return res.send("Helloo brotherr");
 };
+const generateRandom = ()=>{
+  const randomNumber = Math.floor(Math.random() * 9000000000) + 1000000000;
+    return randomNumber;
+}
+
+const generateUniqueAlias =async()=> {
+  let uniqueAlias;
+  do {
+      uniqueAlias = generateRandom();
+  } while (await Url.findOne({ alias: uniqueAlias }));
+  return uniqueAlias;
+}
 
 exports.shorten = async (req, res) => {
   const longUrl = req.body.longUrl;
@@ -30,8 +34,11 @@ exports.shorten = async (req, res) => {
         .send({ shortUrl: `http://localhost:${process.env.PORT}/${alias}` });
     } else {
       //   const uniqueAlias = generator.nextId().toString();
-      const uniqueAlias = uuid4()
-      const url = await new Url({ longUrl, uniqueAlias });
+      const uniqueAlias = await generateUniqueAlias()
+      if(await Url.findOne({alias: uniqueAlias})){
+        uniqueAlias = generateRandom()
+      }
+      const url = await new Url({ longUrl, alias:uniqueAlias });
       await url.save();
 
       res.status(200).send({
@@ -44,18 +51,20 @@ exports.shorten = async (req, res) => {
 };
 
 exports.redirect = async (req, res) => {
-  const alias = req.params.alias;
+  const alias = req.params.alias.split(':')[1];
   //   const / = re
   try {
-    const url = Url.findOne({ alias });
+    const url = await Url.findOne({ alias });
+    console.log(url +"urrr")
     if (url) {
-      url.clickCount++;
+      url.clickCount= url.clickCount++;
       await url.save();
       return res.redirect(301, url.longUrl); // Redirect to the original URL
     } else {
       return res.status(404).send("Alias not found");
     }
   } catch (err) {
+    console.log(err)
     return res.status(500).send(err);
   }
 };
