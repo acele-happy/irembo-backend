@@ -17,7 +17,7 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(userRoutes)
 app.use(urlRoutes) 
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
     res.send('test route')
 })
 // app.use(teacherRoutes)
