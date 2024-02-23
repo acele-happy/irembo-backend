@@ -13,7 +13,9 @@ app.use(cors())
 app.use(corsFunction)
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
-app.get('/hello',text)
+app.get('/test', (req, res) => {
+    res.send('test route')
+})
 // app.use(teacherRoutes)
 
 app.listen(process.env.PORT,()=>console.log('Connected to port 4040'))
