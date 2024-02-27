@@ -1,66 +1,82 @@
-// controller.test.js
+const { expect } = require("chai");
+const chaiHttp =require ("chai-http");
+const dotenv =require ("dotenv");
+const chai = require('chai')
 
-const request = require('supertest');
-const app = require('../app'); // Assuming your Express app is named 'app'
-const User = require('../models/User'); // Assuming you have a User model defined
-const jwt = require('jsonwebtoken');
+dotenv.config();
+chai.should();
+chai.use(chaiHttp);
 
-describe('Controller Tests', () => {
-  // Tests for getAllUsers function
-  it('should return all users', async () => {
-    const response = await request(app).get('/users').expect(200);
-    expect(response.body.length).toBeGreaterThan(0);
+const server = require("../../src/index");
+
+describe("POST /api/v1/users", () => {
+
+  it("It should NOT POST a duplicate user email", (done) => {
+    const newUser = {
+      firstName: "Acele",
+      lastName: "Happy",
+      email: "acele@mail.com",
+      password: "123",
+    };
+
+    chai
+      .request(server)
+      .post("/api/v1/users/register")
+      .send(newUser)
+      .end((err, response) => {
+        response.should.have.status(403);
+        response.body.should.have.property("success").eq(false);
+        response.body.should.have
+          .property("message")
+          .eq("This email address has already been used!");
+        done();
+      });
   });
 
-  // Tests for getUserById function
-  it('should return user by ID', async () => {
-    const newUser = new User({ email: 'test@example.com', password: 'password' });
-    await newUser.save();
-
-    const response = await request(app).get(`/users/${newUser._id}`).expect(200);
-    expect(response.body.email).toBe('test@example.com');
-  });
-
-  // Tests for registerUser function
-  it('should register a new user', async () => {
-    const userData = { email: 'newuser@example.com', password: 'password' };
-
-    const response = await request(app)
-      .post('/register')
-      .send(userData)
-      .expect(201);
-
-    expect(response.body.email).toBe('newuser@example.com');
-  });
-
-  // Tests for loginUsers function
-  it('should login a user and return a token', async () => {
-    const newUser = new User({ email: 'test@example.com', password: 'password' });
-    await newUser.save();
-
-    const response = await request(app)
-      .post('/login')
-      .send({ email: 'test@example.com', password: 'password' })
-      .expect(200);
-
-    expect(response.body.token).toBeTruthy();
-
-    // Verify token
-    const decoded = jwt.verify(response.body.token, process.env.SECRETE_KEY);
-    expect(decoded.id).toBe(newUser._id.toString());
-    expect(decoded.name).toBe('test@example.com');
-  });
-
-  // Test for invalid email or password during login
-  it('should return 401 for invalid email or password during login', async () => {
-    await request(app)
-      .post('/login')
-      .send({ email: 'nonexistent@example.com', password: 'password' })
-      .expect(401);
-
-    await request(app)
-      .post('/login')
-      .send({ email: 'test@example.com', password: 'invalidpassword' })
-      .expect(401);
+  it("Should sign in user", (done) => {
+    chai
+      .request(server)
+      .post("/api/v1/users/login")
+      .send({
+        email: `acele@mail.com`,
+        password: "123",
+      })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.have.property("token");
+        done();
+      });
   });
 });
+
+describe("GET /api/v1/users", () => {
+  /**
+   * Test GET route
+   */
+  describe("GET /api/v1/users", () => {
+    it("It should GET a list of all users", async () => {
+      const res = await chai.request(server).get("/api/v1/users");
+      expect(res).to.have.status(200);
+      expect(res.body).to.be.a("array");
+    });
+
+    it("It should NOT GET a list of all users", async () => {
+      const res = await chai.request(server).get("/api/users/all");
+      expect(res).to.have.status(404);
+    });
+  });
+
+  /**
+   * Test GET route for specific role
+   */
+  describe("GET /api/v1/users/:uuid", () => {
+    it("It should GET a specific user by its specific uuid", async () => {
+      const uuid = "43acebdf-1679-4ba1-a61a-65b9ba7c296d",
+        res = await chai.request(server).get("/api/v1/users/" + uuid);
+      expect(res).to.have.status(200);
+      expect(res.body).to.be.a("object");
+    });
+  });
+
+});
+//fix

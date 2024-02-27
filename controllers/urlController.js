@@ -78,11 +78,15 @@ exports.getUrlsByUserId = async (req, res) => {
   }
 };
 
+// function cronDefinition() {
+
+// }
+
 // Cron job to delete expired URLs every day
 cron.schedule("0 0 * * *", async () => {
   try {
     // Find and delete expired URLs
-    await URL.deleteMany({ expiresAt: { $lte: new Date() } });
+    await Url.deleteMany({ expiresAt: { $lte: new Date() } });
     console.log("Expired URLs deleted successfully");
   } catch (err) {
     console.error("Error deleting expired URLs:", err);
