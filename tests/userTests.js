@@ -7,11 +7,11 @@ dotenv.config();
 chai.should();
 chai.use(chaiHttp);
 
-const server = require("../../src/index");
+const server = require("../app");
 
-describe("POST /api/v1/users", () => {
+describe("POST /user", () => {
 
-  it("It should NOT POST a duplicate user email", (done) => {
+  it("It should create a user", (done) => {
     const newUser = {
       firstName: "Acele",
       lastName: "Happy",
@@ -21,14 +21,14 @@ describe("POST /api/v1/users", () => {
 
     chai
       .request(server)
-      .post("/api/v1/users/register")
+      .post("/user/register")
       .send(newUser)
       .end((err, response) => {
-        response.should.have.status(403);
+        response.should.have.status(201);
         response.body.should.have.property("success").eq(false);
         response.body.should.have
           .property("message")
-          .eq("This email address has already been used!");
+          .eq("User Created");
         done();
       });
   });
@@ -36,7 +36,7 @@ describe("POST /api/v1/users", () => {
   it("Should sign in user", (done) => {
     chai
       .request(server)
-      .post("/api/v1/users/login")
+      .post("/user/login")
       .send({
         email: `acele@mail.com`,
         password: "123",
@@ -49,13 +49,13 @@ describe("POST /api/v1/users", () => {
   });
 });
 
-describe("GET /api/v1/users", () => {
+describe("GET /user", () => {
   /**
    * Test GET route
    */
-  describe("GET /api/v1/users", () => {
+  describe("GET /user", () => {
     it("It should GET a list of all users", async () => {
-      const res = await chai.request(server).get("/api/v1/users");
+      const res = await chai.request(server).get("/user");
       expect(res).to.have.status(200);
       expect(res.body).to.be.a("array");
     });
@@ -69,10 +69,10 @@ describe("GET /api/v1/users", () => {
   /**
    * Test GET route for specific role
    */
-  describe("GET /api/v1/users/:uuid", () => {
+  describe("GET /user/:uuid", () => {
     it("It should GET a specific user by its specific uuid", async () => {
       const uuid = "43acebdf-1679-4ba1-a61a-65b9ba7c296d",
-        res = await chai.request(server).get("/api/v1/users/" + uuid);
+        res = await chai.request(server).get("/user/" + uuid);
       expect(res).to.have.status(200);
       expect(res.body).to.be.a("object");
     });
