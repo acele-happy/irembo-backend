@@ -1,5 +1,4 @@
 [![Coverage Status](https://coveralls.io/repos/github/acele-happy/irembo-backend/badge.svg?branch=master)](https://coveralls.io/github/acele-happy/irembo-backend?branch=master)
-# ZipUrl
 
 This project aims to a shorter and unique
 alias given a long URL.
