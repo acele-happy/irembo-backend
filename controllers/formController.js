@@ -77,7 +77,7 @@ function getEmailTemplate(data) {
                     <tr><td>Date</td><td>${data.date || 'N/A'}</td></tr>
                     <tr><td>Product Category</td><td>${data.productcategory || 'N/A'}</td></tr>
                     <tr><td>Weight</td><td>${data.weight || 'N/A'}</td></tr>
-                    <tr><td>Unit</td><td>${data.unit || 'N/A'}</td></tr>
+                    <tr><td>Unit of Measurement</td><td>${data.unit || 'N/A'}</td></tr>
                     <tr><td>Quantity</td><td>${data.quantity || 'N/A'}</td></tr>
                     <tr><td>Description</td><td>${data.description || 'N/A'}</td></tr>
                     <tr><td>Product Name</td><td>${data.pname || 'N/A'}</td></tr>
