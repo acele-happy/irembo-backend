@@ -32,7 +32,7 @@ exports.shorten = async (req, res) => {
       const newurl = await new Url({ userId, longUrl, alias: customAlias });
       await newurl.save();
       return res.status(200).send({
-        shortUrl: `http://localhost:${process.env.PORT}/${newurl.alias}`,
+        shortUrl: `http://shorturl/${newurl.alias}`,
       });
     } else {
       //   const uniqueAlias = generator.nextId().toString();
@@ -41,7 +41,7 @@ exports.shorten = async (req, res) => {
       await url.save();
 
       res.status(200).send({
-        shortUrl: `http://localhost:${process.env.PORT}/${uniqueAlias}`,
+        shortUrl: `http://shorturl/${uniqueAlias}`,
       });
     }
   } catch (err) {
